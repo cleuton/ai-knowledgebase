@@ -6,7 +6,7 @@ reranking from day one. See [`specs/001-kb-search-mvp/`](specs/001-kb-search-mvp
 spec, plan, and task breakdown, and [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
 for the project's non-negotiable engineering principles.
 
-[**Original user story:**](../USER_STORY.md)
+[**Original user story:**](./USER_STORY.md)
 
 ## Prerequisites
 
