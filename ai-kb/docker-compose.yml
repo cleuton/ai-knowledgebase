@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: kb_search
+    ports:
+      - "5432:5432"
+    volumes:
+      - kb_search_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kb_search"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  kb_search_pgdata:
