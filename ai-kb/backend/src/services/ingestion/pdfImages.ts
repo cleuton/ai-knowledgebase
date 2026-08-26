@@ -66,11 +66,25 @@ function encodePng(image: PdfImageObject): Buffer {
   return canvas.toBuffer("image/png");
 }
 
+/** pdf.js decodes embedded images on its worker and delivers them to
+ * `page.objs` via a separate async message, independent of the operator
+ * list — `page.objs.get(name)` throws if called before that delivery lands.
+ * The callback form waits for resolution instead of assuming it's already
+ * there (mirrors how pdf.js's own canvas renderer waits on `OPS.dependency`
+ * before painting). */
+function getResolvedImageObject(page: PDFPageProxy, name: string): Promise<PdfImageObject | undefined> {
+  return new Promise((resolve) => {
+    page.objs.get(name, (data: PdfImageObject | undefined) => resolve(data));
+  });
+}
+
 /** Extracts every embedded raster image on a page via the operator list's
- * `paintImageXObject` calls, resolving each through `page.objs` (populated by
- * the time `getOperatorList()` resolves). Extraction failures are caught and
- * skipped per-image rather than failing the whole page — a single malformed
- * image shouldn't take down ingestion for the rest of the document. */
+ * `paintImageXObject` calls, resolving each through `page.objs` — image
+ * bytes arrive asynchronously and are not guaranteed to be present yet when
+ * `getOperatorList()` resolves, so resolution is awaited per image rather
+ * than read synchronously. Extraction failures are caught and skipped
+ * per-image rather than failing the whole page — a single malformed image
+ * shouldn't take down ingestion for the rest of the document. */
 export async function extractPageImages(
   page: PDFPageProxy,
   pageNumber: number,
@@ -83,7 +97,7 @@ export async function extractPageImages(
     const args = operatorList.argsArray[i] as [string, ...unknown[]];
     const name = args[0];
     try {
-      const imageObj = page.objs.get(name) as PdfImageObject | undefined;
+      const imageObj = await getResolvedImageObject(page, name);
       if (!imageObj?.data) continue;
       // Placement transform for this draw call isn't directly attached to
       // the operator args in a stable cross-version way; approximate the

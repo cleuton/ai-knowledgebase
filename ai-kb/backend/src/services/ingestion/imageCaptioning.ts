@@ -91,6 +91,7 @@ export async function captionImage(image: ExtractedImage): Promise<ImageCaption 
     trend: string;
     summary: string;
   };
+  if (!input.summary) return null;
 
   return {
     metadata: {

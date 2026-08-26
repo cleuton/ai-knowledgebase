@@ -62,6 +62,12 @@ four scenarios — upload & index, ask a text-grounded question, ask a chart-onl
 delete a document — against a real Postgres instance and live Anthropic/Voyage credentials.
 Run these after setup to confirm the whole pipeline works with real data, not just mocks.
 
+## Manual tests with fake documents
+
+[I have created 3 fake PDFs for you to index and search](./ai-kb/fake_documents/). Just index them, and then create some queries. I even created a detailed query that demands image analysis: 
+
+> "According to the report, D. Alvarez was the top-performing sales representative in Q3 2026. Using the leaderboard chart, calculate the dollar gap between D. Alvarez's sales and the second-place representative's sales. Then, based on the accompanying text, explain what specifically drove D. Alvarez's top ranking that quarter."
+
 ## Known MVP limitations
 
 - Single-tenant, unauthenticated by design — deploy behind a trusted network or an external auth
