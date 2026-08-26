@@ -68,6 +68,8 @@ Run these after setup to confirm the whole pipeline works with real data, not ju
 
 > "According to the report, D. Alvarez was the top-performing sales representative in Q3 2026. Using the leaderboard chart, calculate the dollar gap between D. Alvarez's sales and the second-place representative's sales. Then, based on the accompanying text, explain what specifically drove D. Alvarez's top ranking that quarter."
 
+![Using the web interface](./images/Screenshot%20from%202026-08-26%2012-39-09.png)
+
 ## Known MVP limitations
 
 - Single-tenant, unauthenticated by design — deploy behind a trusted network or an external auth
