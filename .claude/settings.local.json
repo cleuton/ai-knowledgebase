@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sudo -n true)",
+      "Bash(npm install *)",
+      "Bash(npm audit *)",
+      "Bash(npx tsc *)",
+      "Bash(npx playwright *)",
+      "Bash(docker exec *)",
+      "Bash(break)",
+      "Bash(node *)",
+      "Bash(npm run *)",
+      "Bash(npx vitest *)",
+      "Bash(TEST_DATABASE_URL=\"postgres://postgres:postgres@localhost:55432/kb_search\" npx vitest run tests/integration/retrieval.integration.test.ts)",
+      "Bash(cp /tmp/e2e_smoke.mjs /home/cleuton/Documents/projetos/ai-knowledge-base/ai-kb/backend/_smoke_tmp.mjs)",
+      "Bash(npx tsx *)",
+      "Bash(rm -f /home/cleuton/Documents/projetos/ai-knowledge-base/ai-kb/backend/_smoke_tmp.mjs /tmp/e2e_smoke.mjs)",
+      "Bash(docker rm *)",
+      "Bash(npx eslint *)"
+    ]
+  }
+}

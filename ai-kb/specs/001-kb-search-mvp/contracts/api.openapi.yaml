@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: Knowledge Base Search MVP API
+  version: "1.0.0"
+  description: >
+    Internal REST API between the React frontend and the Node backend.
+    Covers document upload/list/delete (FR-001–FR-005, FR-017–FR-018) and
+    question answering (FR-012–FR-016). Single-user MVP: no auth scheme is
+    modeled here beyond the assumption of one authenticated session
+    (spec.md Assumptions); an auth layer may wrap these routes without
+    changing their shapes.
+
+paths:
+  /documents:
+    post:
+      summary: Upload one or more PDF files for ingestion
+      operationId: uploadDocuments
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+              required: [files]
+      responses:
+        "202":
+          description: Documents accepted and queued for background ingestion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Document"
+        "400":
+          description: One or more files were rejected (not a PDF) — FR-002
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      summary: List all documents with current ingestion status
+      operationId: listDocuments
+      description: Frontend polls this endpoint (research.md §10) while any document is queued/processing.
+      responses:
+        "200":
+          description: Current document list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Document"
+
+  /documents/{documentId}:
+    delete:
+      summary: Delete a document and all of its chunks from both indexes
+      operationId: deleteDocument
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: >
+            Document and all associated chunks removed from both the vector
+            and lexical indexes (FR-018). Cascading delete is enforced at the
+            database level (data-model.md), so this is atomic.
+        "404":
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /query:
+    post:
+      summary: Ask a natural-language question and receive a grounded, cited answer
+      operationId: askQuestion
+      description: >
+        Runs the hybrid retrieval → RRF fusion → rerank → generation pipeline
+        (FR-012–FR-016). Synchronous; expected to complete within the ~5s
+        latency budget (SC-002) for the in-scope corpus size.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  minLength: 1
+              required: [question]
+      responses:
+        "200":
+          description: Answer generated (confident or explicit no-confident-answer)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionAnswerExchange"
+        "400":
+          description: Empty or malformed question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        status:
+          type: string
+          enum: [queued, processing, indexed, failed]
+        statusReason:
+          type: string
+          nullable: true
+          description: Set only when status = failed (FR-004)
+        pageCount:
+          type: integer
+          nullable: true
+        uploadedAt:
+          type: string
+          format: date-time
+        indexedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required: [id, filename, status, uploadedAt]
+
+    Citation:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        documentFilename:
+          type: string
+        page:
+          type: integer
+      required: [documentId, documentFilename, page]
+
+    QuestionAnswerExchange:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+        confident:
+          type: boolean
+          description: >
+            False when no retrieved chunk cleared the minimum relevance bar
+            (research.md §9); when false, `answer` is the fixed no-confident-
+            answer message and `citations` is empty (FR-016).
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Citation"
+      required: [question, answer, confident, citations]
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]

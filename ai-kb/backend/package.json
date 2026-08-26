@@ -1,0 +1,40 @@
+{
+  "name": "kb-search-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Knowledge Base Search MVP — backend API, ingestion pipeline, hybrid retrieval, and citation-grounded generation.",
+  "scripts": {
+    "dev": "tsx watch src/api/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/api/server.js",
+    "migrate": "tsx src/db/migrate.ts",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@fastify/multipart": "^9.0.1",
+    "@napi-rs/canvas": "^0.1.65",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.1.0",
+    "pdfjs-dist": "^4.8.69",
+    "pg": "^8.13.1",
+    "pg-boss": "^10.1.5",
+    "pgvector": "^0.2.1",
+    "pino": "^9.5.0",
+    "pino-pretty": "^13.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/pg": "^8.11.10",
+    "@typescript-eslint/eslint-plugin": "^8.14.0",
+    "@typescript-eslint/parser": "^8.14.0",
+    "eslint": "^9.14.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}
