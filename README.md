@@ -118,7 +118,7 @@ declared test stack is wired up correctly.
 
 ## Manual end-to-end validation
 
-[`specs/001-kb-search-mvp/quickstart.md`](specs/001-kb-search-mvp/quickstart.md) walks through
+[`ai-kb/specs/001-kb-search-mvp/quickstart.md`](ai-kb/specs/001-kb-search-mvp/quickstart.md) walks through
 four scenarios — upload & index, ask a text-grounded question, ask a chart-only question, and
 delete a document — against a real Postgres instance and live Anthropic/Voyage credentials.
 Run these after setup to confirm the whole pipeline works with real data, not just mocks.
