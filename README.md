@@ -3,7 +3,7 @@
 Upload PDF documents (including ones with charts and infographics), then ask natural-language
 questions and get grounded, cited answers — built on hybrid search (vector + lexical) and
 reranking from day one. See [`ai-kb/specs/001-kb-search-mvp/`](ai-kb/specs/001-kb-search-mvp/) for the full
-spec, plan, and task breakdown, and [`ai-kb/.specify/memory/constitution.md`](.specify/memory/constitution.md)
+spec, plan, and task breakdown, and [`ai-kb/.specify/memory/constitution.md)
 for the project's non-negotiable engineering principles.
 
 [**Original user story:**](./USER_STORY.md)
